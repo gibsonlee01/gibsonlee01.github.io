@@ -187,15 +187,27 @@
     .tl-item::after {
       content: '';
       position: absolute; left: 16px; right: 16px; bottom: 0; height: 1px;
-      background: var(--border);
+      background-color: var(--border);
       pointer-events: none;
     }
-    .tl-item:last-child::after { display: none; }
+    .tl-item:last-child::after { background-color: transparent; }
 
     /* Rows that link somewhere behave like the publication cards */
     .tl-item--link { cursor: pointer; }
     .tl-item--link:hover { background: var(--bg2); }
     .tl-item--link:active { background: var(--bg3); }
+    /*
+      On hover a soft sky-to-blue rule wipes in from the left along the row's
+      bottom edge — the affordance that says the whole row is clickable.
+      It rides on the separator's ::after, so it costs no extra element.
+    */
+    .tl-item--link::after {
+      background-image: linear-gradient(90deg, #5ac8fa, var(--accent));
+      background-repeat: no-repeat;
+      background-size: 0 100%;
+      transition: background-size .32s ease, height .18s ease;
+    }
+    .tl-item--link:hover::after { background-size: 100% 100%; height: 2px; }
     /* Stretch the row's primary link across the whole row … */
     .tl-link::before { content: ''; position: absolute; inset: 0; border-radius: 14px; }
     /* … while secondary links stay clickable on their own */
