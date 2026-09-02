@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Jiwoo Lee — Researcher</title>
 
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" href="asset/browser_icon.png" />
+  <!-- Favicon (same Lett mark used in the Experience timeline) -->
+  <link rel="icon" type="image/png" href="asset/experience/lett_logo.png" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -161,13 +161,53 @@
     .divider { height: 1px; background: var(--border); }
 
     /* ── Timeline ── */
+    /*
+      Organisation logos live in asset/experience/ (one per entry).
+      Every logo is placed in a fixed 60×60 .tl-logo tile and scaled with
+      object-fit: contain, so wordmarks, crests and square marks all take up
+      exactly the same space. Modifiers:
+        .tl-logo--fill  → full-bleed square mark, no padding
+        .tl-logo--mono  → monogram fallback when no logo file exists
+    */
     .timeline { display: flex; flex-direction: column; }
     .tl-item {
-      display: grid; grid-template-columns: 120px 1fr; gap: 24px;
+      display: grid; grid-template-columns: 194px 1fr; gap: 24px;
+      align-items: start;
       padding: 28px 0; border-bottom: 1px solid var(--border);
     }
     .tl-item:last-child { border-bottom: none; }
-    .tl-date { font-size: .8rem; color: var(--muted); font-weight: 500; padding-top: 3px; line-height: 1.5; }
+
+    /* Logo + date share the leading column, side by side */
+    .tl-meta { display: flex; align-items: center; gap: 14px; }
+
+    .tl-logo {
+      flex-shrink: 0;
+      width: 60px; height: 60px;
+      padding: 8px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      box-shadow: var(--shadow-s);
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+    }
+    .tl-logo img {
+      max-width: 100%; max-height: 100%;
+      width: auto; height: auto;
+      object-fit: contain;
+      display: block;
+    }
+    .tl-logo--fill { padding: 0; }
+    .tl-logo--fill img { width: 100%; height: 100%; object-fit: cover; }
+    /* For logos drawn in white, which would be invisible on the default tile */
+    .tl-logo--dark { background: #1d1d1f; border-color: #1d1d1f; }
+    .tl-logo--mono {
+      background: var(--bg2);
+      font-size: .95rem; font-weight: 700; letter-spacing: .5px;
+      color: var(--accent);
+    }
+
+    .tl-date { font-size: .8rem; color: var(--muted); font-weight: 500; line-height: 1.5; }
     .tl-title { font-size: 1rem; font-weight: 600; color: var(--text); margin-bottom: 4px; }
     .tl-org { font-size: .875rem; color: var(--sub); margin-bottom: 8px; }
     .tl-desc { font-size: .875rem; color: var(--muted); line-height: 1.65; }
@@ -175,10 +215,11 @@
     /* ── Publications ── */
     /*
       Paper thumbnail naming convention:
-        asset/01.png → 1st paper (top of the list)
-        asset/02.png → 2nd paper
+        asset/publication/01.png → 1st paper (top of the list)
+        asset/publication/02.png → 2nd paper
         ... and so on.
-      Add new papers at the bottom of the list and place the matching image in asset/.
+      Add new papers at the bottom of the list and place the matching image
+      in asset/publication/.
     */
     .pub-list { display: flex; flex-direction: column; gap: 16px; }
 
@@ -241,7 +282,8 @@
       .avatar-wrap, .avatar-wrap img, .avatar-fallback { width: 150px; height: 150px; margin: 0 auto; }
       .chips, .btn-row { justify-content: center; }
       .hero-bio { margin: 0 auto 28px; }
-      .tl-item { grid-template-columns: 1fr; gap: 6px; }
+      /* Logo + date stay side by side, stacked above the body text */
+      .tl-item { grid-template-columns: 1fr; gap: 14px; }
       .pub-card { flex-direction: column; align-items: flex-start; }
       .pub-thumb { width: 100%; height: 160px; }
       .pub-arrow { display: none; }
@@ -279,22 +321,23 @@
     <div class="hero-text">
       <div class="hero-eyebrow">
         <span class="status-dot"></span>
-        Research Intern · CIPLAB, Yonsei University
+        PhD Student · CIPLAB, Yonsei University
       </div>
       <h1>Jiwoo Lee</h1>
-      <p class="hero-role">Computer Vision &amp; 3D Spatial Intelligence</p>
+      <p class="hero-role">3D Vision &amp; Robotics</p>
       <p class="hero-bio">
-        Thank you for visiting my page. I am a research intern at
+        Thank you for visiting my page. I am a PhD student at
         <a href="https://www.ciplab.kr" target="_blank">CIPLAB</a>,
         Yonsei University, advised by Prof.
         <a href="https://www.ciplab.kr/members/professor" target="_blank">Seon Joo Kim</a>.
-        My work focuses on 3D vision and spatial intelligence — enabling machines to perceive
+        My work focuses on 3D vision and robotics — enabling machines to perceive
         and understand the three-dimensional world as humans do.
       </p>
 
       <div class="chips">
-        <span class="chip">🧠 Spatial intelligence</span>
         <span class="chip">🧊 3D Vision</span>
+        <span class="chip">🤖 Robotics</span>
+        <span class="chip">🧠 Spatial intelligence</span>
       </div>
 
       <div class="btn-row">
@@ -312,9 +355,9 @@
   <!--
     To add a new paper:
       1. Add a new <a class="pub-card"> block below, following the same pattern.
-      2. Place the paper's thumbnail image in asset/ named sequentially:
-           asset/01.png  →  1st paper (top)
-           asset/02.png  →  2nd paper
+      2. Place the paper's thumbnail image in asset/publication/ named sequentially:
+           asset/publication/01.png  →  1st paper (top)
+           asset/publication/02.png  →  2nd paper
            (and so on)
   -->
   <section id="publications" class="reveal">
@@ -327,7 +370,7 @@
         target="_blank"
         rel="noopener"
       >
-        <img class="pub-thumb" src="asset/01.png" alt="Paper thumbnail" />
+        <img class="pub-thumb" src="asset/publication/01.png" alt="Paper thumbnail" />
         <div class="pub-body">
           <div class="pub-venue">IEEE ACCESS · 2025</div>
           <div class="pub-title">
@@ -348,21 +391,42 @@
   <div class="divider"></div>
 
   <!-- ── Experience ── -->
+  <!--
+    To add a new entry:
+      1. Copy a .tl-item block below and keep the same structure:
+           .tl-meta  →  .tl-logo (60×60 tile) + .tl-date
+           .tl-body  →  .tl-title / .tl-org / .tl-desc
+      2. Put the organisation logo in asset/experience/ (png or svg, any aspect
+         ratio — the tile scales it with object-fit: contain).
+      3. Add .tl-logo--fill for a full-bleed square mark, .tl-logo--dark for a
+         white/light logo, or use .tl-logo--mono with 1–2 letters when there is
+         no logo file.
+  -->
   <section id="experience" class="reveal">
     <div class="section-label">Experience &amp; Education</div>
     <div class="timeline">
 
       <div class="tl-item">
-        <div class="tl-date">2026.01 – Present</div>
+        <div class="tl-meta">
+          <div class="tl-logo tl-logo--fill">
+            <img src="asset/experience/ciplab_logo.png" alt="CIPLAB logo" />
+          </div>
+          <div class="tl-date">2026.01 – Present</div>
+        </div>
         <div class="tl-body">
-          <div class="tl-title">Research Intern</div>
+          <div class="tl-title">PhD Student</div>
           <div class="tl-org"><a href="https://www.ciplab.kr" target="_blank">CIPLAB</a> · Yonsei University</div>
           <div class="tl-desc">3D vision and spatial understanding, advised by Prof. <a href="https://www.ciplab.kr/members/professor" target="_blank">Seon Joo Kim</a>.</div>
         </div>
       </div>
 
       <div class="tl-item">
-        <div class="tl-date">2025.02 – 2025.08</div>
+        <div class="tl-meta">
+          <div class="tl-logo">
+            <img src="asset/experience/Korea_University.svg" alt="Korea University logo" />
+          </div>
+          <div class="tl-date">2025.02 – 2025.08</div>
+        </div>
         <div class="tl-body">
           <div class="tl-title">Research Intern</div>
           <div class="tl-org"><a href="https://kuaicv.com" target="_blank">KUAICV</a> · Korea University</div>
@@ -371,7 +435,12 @@
       </div>
 
       <div class="tl-item">
-        <div class="tl-date">2023.10 – 2024.10</div>
+        <div class="tl-meta">
+          <div class="tl-logo">
+            <img src="asset/experience/lett_logo.png" alt="Lett Team logo" />
+          </div>
+          <div class="tl-date">2023.10 – 2024.10</div>
+        </div>
         <div class="tl-body">
           <div class="tl-title">Co-Founder</div>
           <div class="tl-org">Lett Team</div>
@@ -380,7 +449,12 @@
       </div>
 
       <div class="tl-item">
-        <div class="tl-date">2023.04 – 2023.09</div>
+        <div class="tl-meta">
+          <div class="tl-logo tl-logo--dark">
+            <img src="asset/experience/triplet_logo.svg" alt="triplllet logo" />
+          </div>
+          <div class="tl-date">2023.04 – 2023.09</div>
+        </div>
         <div class="tl-body">
           <div class="tl-title">Development Intern</div>
           <div class="tl-org"><a href="https://www.triplllet.com" target="_blank">triplllet</a></div>
@@ -389,7 +463,12 @@
       </div>
 
       <div class="tl-item">
-        <div class="tl-date">2021.09 – 2023.03</div>
+        <div class="tl-meta">
+          <div class="tl-logo">
+            <img src="asset/experience/military_logo.png" alt="Republic of Korea Army logo" />
+          </div>
+          <div class="tl-date">2021.09 – 2023.03</div>
+        </div>
         <div class="tl-body">
           <div class="tl-title">Military Service</div>
           <div class="tl-org">Republic of Korea Army</div>
@@ -397,7 +476,12 @@
       </div>
 
       <div class="tl-item">
-        <div class="tl-date">2020.03 – 2026.02</div>
+        <div class="tl-meta">
+          <div class="tl-logo">
+            <img src="asset/experience/hongik_logo.png" alt="Hongik University logo" />
+          </div>
+          <div class="tl-date">2020.03 – 2026.02</div>
+        </div>
         <div class="tl-body">
           <div class="tl-title">B.S. in Computer Science</div>
           <div class="tl-org"><a href="https://www.hongik.ac.kr" target="_blank">Hongik University</a></div>
