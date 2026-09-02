@@ -20,8 +20,11 @@
       --bg2:      #f5f5f7;
       --bg3:      #e8e8ed;
       --border:   rgba(0,0,0,.08);
-      --accent:   #0066cc;
-      --accent-h: #0077ed;
+      --accent:   #2563eb;
+      --accent-h: #4f8bf5;
+      /* Washes for the clickable rows, derived from --accent */
+      --accent-wash:  rgba(37,99,235,.035);
+      --accent-press: rgba(37,99,235,.065);
       --text:     #1d1d1f;
       --sub:      #6e6e73;
       --muted:    #86868b;
@@ -183,11 +186,11 @@
     .pub-card:last-child::after, .tl-item:last-child::after { background-color: transparent; }
 
     .pub-card, .tl-item--link { cursor: pointer; }
-    .pub-card:hover, .tl-item--link:hover { background: rgba(0,102,204,.03); }
-    .pub-card:active, .tl-item--link:active { background: rgba(0,102,204,.055); }
+    .pub-card:hover, .tl-item--link:hover { background: var(--accent-wash); }
+    .pub-card:active, .tl-item--link:active { background: var(--accent-press); }
 
     .pub-card::after, .tl-item--link::after {
-      background-image: linear-gradient(90deg, #a5dffb, #7fb3ea);
+      background-image: linear-gradient(90deg, #a5dffb, #8aa8f4);
       background-repeat: no-repeat;
       background-size: 0 100%;
       transition: background-size .32s ease, height .18s ease;
