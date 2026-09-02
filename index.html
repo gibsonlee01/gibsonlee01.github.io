@@ -162,27 +162,47 @@
 
     /* ── Timeline ── */
     /*
+      Columns: date · logo · body · arrow.
       Organisation logos live in asset/experience/ (one per entry).
-      Every logo is placed in a fixed 60×60 .tl-logo tile and scaled with
+      Every logo is placed in a fixed 56×56 .tl-logo tile and scaled with
       object-fit: contain, so wordmarks, crests and square marks all take up
       exactly the same space. Modifiers:
         .tl-logo--fill  → full-bleed square mark, no padding
+        .tl-logo--dark  → white/light logo that needs a dark tile
         .tl-logo--mono  → monogram fallback when no logo file exists
     */
     .timeline { display: flex; flex-direction: column; }
     .tl-item {
-      display: grid; grid-template-columns: 194px 1fr; gap: 24px;
+      position: relative;
+      display: grid;
+      grid-template-columns: 126px 56px 1fr 22px;
+      column-gap: 18px;
       align-items: start;
-      padding: 28px 0; border-bottom: 1px solid var(--border);
+      margin: 0 -16px;
+      padding: 26px 16px;
+      border-radius: 14px;
+      transition: background .18s;
     }
-    .tl-item:last-child { border-bottom: none; }
+    /* Separator stays aligned with the content, not with the hover padding */
+    .tl-item::after {
+      content: '';
+      position: absolute; left: 16px; right: 16px; bottom: 0; height: 1px;
+      background: var(--border);
+      pointer-events: none;
+    }
+    .tl-item:last-child::after { display: none; }
 
-    /* Logo + date share the leading column, side by side */
-    .tl-meta { display: flex; align-items: center; gap: 14px; }
+    /* Rows that link somewhere behave like the publication cards */
+    .tl-item--link { cursor: pointer; }
+    .tl-item--link:hover { background: var(--bg2); }
+    .tl-item--link:active { background: var(--bg3); }
+    /* Stretch the row's primary link across the whole row … */
+    .tl-link::before { content: ''; position: absolute; inset: 0; border-radius: 14px; }
+    /* … while secondary links stay clickable on their own */
+    .tl-desc a { position: relative; z-index: 1; }
 
     .tl-logo {
-      flex-shrink: 0;
-      width: 60px; height: 60px;
+      width: 56px; height: 56px;
       padding: 8px;
       background: #fff;
       border: 1px solid var(--border);
@@ -207,10 +227,22 @@
       color: var(--accent);
     }
 
-    .tl-date { font-size: .8rem; color: var(--muted); font-weight: 500; line-height: 1.5; }
+    .tl-date {
+      font-size: .8rem; color: var(--muted); font-weight: 500;
+      padding-top: 3px; line-height: 1.5;
+      white-space: nowrap;
+    }
     .tl-title { font-size: 1rem; font-weight: 600; color: var(--text); margin-bottom: 4px; }
     .tl-org { font-size: .875rem; color: var(--sub); margin-bottom: 8px; }
     .tl-desc { font-size: .875rem; color: var(--muted); line-height: 1.65; }
+
+    .tl-arrow {
+      align-self: center;
+      color: var(--accent); font-size: 1.1rem;
+      opacity: .5;
+      transition: opacity .15s, transform .15s;
+    }
+    .tl-item--link:hover .tl-arrow { opacity: 1; transform: translateX(3px); }
 
     /* ── Publications ── */
     /*
@@ -283,7 +315,11 @@
       .chips, .btn-row { justify-content: center; }
       .hero-bio { margin: 0 auto 28px; }
       /* Logo + date stay side by side, stacked above the body text */
-      .tl-item { grid-template-columns: 1fr; gap: 14px; }
+      .tl-item { grid-template-columns: 56px 1fr; column-gap: 14px; row-gap: 12px; }
+      .tl-logo { grid-column: 1; grid-row: 1; }
+      .tl-date { grid-column: 2; grid-row: 1; align-self: center; padding-top: 0; }
+      .tl-body { grid-column: 1 / -1; grid-row: 2; }
+      .tl-arrow { display: none; }
       .pub-card { flex-direction: column; align-items: flex-start; }
       .pub-thumb { width: 100%; height: 160px; }
       .pub-arrow { display: none; }
@@ -393,81 +429,76 @@
   <!-- ── Experience ── -->
   <!--
     To add a new entry:
-      1. Copy a .tl-item block below and keep the same structure:
-           .tl-meta  →  .tl-logo (60×60 tile) + .tl-date
-           .tl-body  →  .tl-title / .tl-org / .tl-desc
+      1. Copy a .tl-item block below and keep the same four children, in order:
+           .tl-date · .tl-logo (56×56 tile) · .tl-body · .tl-arrow
       2. Put the organisation logo in asset/experience/ (png or svg, any aspect
          ratio — the tile scales it with object-fit: contain).
       3. Add .tl-logo--fill for a full-bleed square mark, .tl-logo--dark for a
          white/light logo, or use .tl-logo--mono with 1–2 letters when there is
          no logo file.
+      4. To make the whole row clickable: add .tl-item--link to the .tl-item,
+         .tl-link to the anchor the row should open, and a .tl-arrow span at
+         the end. Rows without a link simply omit all three.
   -->
   <section id="experience" class="reveal">
     <div class="section-label">Experience &amp; Education</div>
     <div class="timeline">
 
-      <div class="tl-item">
-        <div class="tl-meta">
-          <div class="tl-logo tl-logo--fill">
-            <img src="asset/experience/ciplab_logo.png" alt="CIPLAB logo" />
-          </div>
-          <div class="tl-date">2026.01 – Present</div>
+      <div class="tl-item tl-item--link">
+        <div class="tl-date">2026.01 – Present</div>
+        <div class="tl-logo tl-logo--fill">
+          <img src="asset/experience/ciplab_logo.png" alt="CIPLAB logo" />
         </div>
         <div class="tl-body">
           <div class="tl-title">PhD Student</div>
-          <div class="tl-org"><a href="https://www.ciplab.kr" target="_blank">CIPLAB</a> · Yonsei University</div>
-          <div class="tl-desc">3D vision and spatial understanding, advised by Prof. <a href="https://www.ciplab.kr/members/professor" target="_blank">Seon Joo Kim</a>.</div>
+          <div class="tl-org"><a class="tl-link" href="https://www.ciplab.kr" target="_blank" rel="noopener">CIPLAB</a> · Yonsei University</div>
+          <div class="tl-desc">3D vision and spatial understanding, advised by Prof. <a href="https://www.ciplab.kr/members/professor" target="_blank" rel="noopener">Seon Joo Kim</a>.</div>
         </div>
+        <span class="tl-arrow">→</span>
       </div>
 
-      <div class="tl-item">
-        <div class="tl-meta">
-          <div class="tl-logo">
-            <img src="asset/experience/Korea_University.svg" alt="Korea University logo" />
-          </div>
-          <div class="tl-date">2025.02 – 2025.08</div>
+      <div class="tl-item tl-item--link">
+        <div class="tl-date">2025.02 – 2025.08</div>
+        <div class="tl-logo">
+          <img src="asset/experience/Korea_University.svg" alt="Korea University logo" />
         </div>
         <div class="tl-body">
           <div class="tl-title">Research Intern</div>
-          <div class="tl-org"><a href="https://kuaicv.com" target="_blank">KUAICV</a> · Korea University</div>
+          <div class="tl-org"><a class="tl-link" href="https://kuaicv.com" target="_blank" rel="noopener">KUAICV</a> · Korea University</div>
           <div class="tl-desc">Computer vision research in the Korea University AI &amp; Computer Vision Laboratory.</div>
         </div>
+        <span class="tl-arrow">→</span>
       </div>
 
       <div class="tl-item">
-        <div class="tl-meta">
-          <div class="tl-logo">
-            <img src="asset/experience/lett_logo.png" alt="Lett Team logo" />
-          </div>
-          <div class="tl-date">2023.10 – 2024.10</div>
+        <div class="tl-date">2023.10 – 2024.10</div>
+        <div class="tl-logo">
+          <img src="asset/experience/lett_logo.png" alt="Lett Team logo" />
         </div>
         <div class="tl-body">
           <div class="tl-title">Co-Founder</div>
           <div class="tl-org">Lett Team</div>
-          <div class="tl-desc">Co-founded a startup; built and shipped two iOS apps — Pzzk (calendar) and Wemby (festival dating).</div>
+          <div class="tl-desc">Co-founded a startup and shipped two iOS apps — Pzzk and Wemby.</div>
         </div>
       </div>
 
-      <div class="tl-item">
-        <div class="tl-meta">
-          <div class="tl-logo tl-logo--dark">
-            <img src="asset/experience/triplet_logo.svg" alt="triplllet logo" />
-          </div>
-          <div class="tl-date">2023.04 – 2023.09</div>
+      <div class="tl-item tl-item--link">
+        <div class="tl-date">2023.04 – 2023.09</div>
+        <div class="tl-logo tl-logo--dark">
+          <img src="asset/experience/triplet_logo.svg" alt="triplllet logo" />
         </div>
         <div class="tl-body">
           <div class="tl-title">Development Intern</div>
-          <div class="tl-org"><a href="https://www.triplllet.com" target="_blank">triplllet</a></div>
+          <div class="tl-org"><a class="tl-link" href="https://www.triplllet.com" target="_blank" rel="noopener">triplllet</a></div>
           <div class="tl-desc">Software development internship at the triplllet dev team.</div>
         </div>
+        <span class="tl-arrow">→</span>
       </div>
 
       <div class="tl-item">
-        <div class="tl-meta">
-          <div class="tl-logo">
-            <img src="asset/experience/military_logo.png" alt="Republic of Korea Army logo" />
-          </div>
-          <div class="tl-date">2021.09 – 2023.03</div>
+        <div class="tl-date">2021.09 – 2023.03</div>
+        <div class="tl-logo">
+          <img src="asset/experience/military_logo.png" alt="Republic of Korea Army logo" />
         </div>
         <div class="tl-body">
           <div class="tl-title">Military Service</div>
@@ -475,17 +506,16 @@
         </div>
       </div>
 
-      <div class="tl-item">
-        <div class="tl-meta">
-          <div class="tl-logo">
-            <img src="asset/experience/hongik_logo.png" alt="Hongik University logo" />
-          </div>
-          <div class="tl-date">2020.03 – 2026.02</div>
+      <div class="tl-item tl-item--link">
+        <div class="tl-date">2020.03 – 2026.02</div>
+        <div class="tl-logo">
+          <img src="asset/experience/hongik_logo.png" alt="Hongik University logo" />
         </div>
         <div class="tl-body">
           <div class="tl-title">B.S. in Computer Science</div>
-          <div class="tl-org"><a href="https://www.hongik.ac.kr" target="_blank">Hongik University</a></div>
+          <div class="tl-org"><a class="tl-link" href="https://www.hongik.ac.kr" target="_blank" rel="noopener">Hongik University</a></div>
         </div>
+        <span class="tl-arrow">→</span>
       </div>
 
     </div>
