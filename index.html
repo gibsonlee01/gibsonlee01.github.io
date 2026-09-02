@@ -28,7 +28,6 @@
       --shadow-s: 0 2px 8px rgba(0,0,0,.06);
       --shadow-m: 0 4px 20px rgba(0,0,0,.08);
       --shadow-l: 0 12px 48px rgba(0,0,0,.1);
-      --radius:   18px;
     }
 
     html { scroll-behavior: smooth; }
@@ -160,68 +159,77 @@
     /* ── Divider ── */
     .divider { height: 1px; background: var(--border); }
 
-    /* ── Timeline ── */
+    /* ── Clickable rows (shared by Publications and Experience) ── */
     /*
-      Columns: date · logo · body · arrow.
-      Organisation logos live in asset/experience/ (one per entry).
-      Every logo is placed in a fixed 56×56 .tl-logo tile and scaled with
-      object-fit: contain, so wordmarks, crests and square marks all take up
-      exactly the same space. Modifiers:
-        .tl-logo--fill  → full-bleed square mark, no padding
-        .tl-logo--dark  → white/light logo that needs a dark tile
-        .tl-logo--mono  → monogram fallback when no logo file exists
+      Both lists use one affordance: a flat row that, on hover, takes a faint
+      blue wash and grows a pale sky-to-blue rule wiping in from the left along
+      its bottom edge, while the arrow slides right. The rule rides on the
+      separator's ::after, so it costs no extra element.
     */
-    .timeline { display: flex; flex-direction: column; }
-    .tl-item {
+    .pub-card, .tl-item {
       position: relative;
-      display: grid;
-      grid-template-columns: 126px 56px 1fr 22px;
-      column-gap: 18px;
-      align-items: start;
       margin: 0 -16px;
       padding: 26px 16px;
       border-radius: 14px;
       transition: background .18s;
     }
     /* Separator stays aligned with the content, not with the hover padding */
-    .tl-item::after {
+    .pub-card::after, .tl-item::after {
       content: '';
       position: absolute; left: 16px; right: 16px; bottom: 0; height: 1px;
       background-color: var(--border);
       pointer-events: none;
     }
-    .tl-item:last-child::after { background-color: transparent; }
+    .pub-card:last-child::after, .tl-item:last-child::after { background-color: transparent; }
 
-    /* Rows that link somewhere behave like the publication cards */
-    .tl-item--link { cursor: pointer; }
-    .tl-item--link:hover { background: var(--bg2); }
-    .tl-item--link:active { background: var(--bg3); }
-    /*
-      On hover a soft sky-to-blue rule wipes in from the left along the row's
-      bottom edge — the affordance that says the whole row is clickable.
-      It rides on the separator's ::after, so it costs no extra element.
-    */
-    .tl-item--link::after {
-      background-image: linear-gradient(90deg, #5ac8fa, var(--accent));
+    .pub-card, .tl-item--link { cursor: pointer; }
+    .pub-card:hover, .tl-item--link:hover { background: rgba(0,102,204,.03); }
+    .pub-card:active, .tl-item--link:active { background: rgba(0,102,204,.055); }
+
+    .pub-card::after, .tl-item--link::after {
+      background-image: linear-gradient(90deg, #a5dffb, #7fb3ea);
       background-repeat: no-repeat;
       background-size: 0 100%;
       transition: background-size .32s ease, height .18s ease;
     }
-    .tl-item--link:hover::after { background-size: 100% 100%; height: 2px; }
+    .pub-card:hover::after, .tl-item--link:hover::after { background-size: 100% 100%; height: 2px; }
+
+    .pub-arrow, .tl-arrow {
+      flex-shrink: 0; align-self: center;
+      color: var(--accent); font-size: 1.1rem;
+      opacity: .5;
+      transition: opacity .15s, transform .15s;
+    }
+    .pub-card:hover .pub-arrow,
+    .tl-item--link:hover .tl-arrow { opacity: 1; transform: translateX(3px); }
+
+    /* ── Timeline ── */
+    /*
+      Columns: date · logo · body · arrow.
+      Organisation logos live in asset/experience/ (one per entry).
+      Every logo sits in an unframed 72×72 .tl-logo box and is scaled with
+      object-fit: contain, so wordmarks, crests and square marks all take up
+      exactly the same space. Modifiers:
+        .tl-logo--fill    → square mark with its own background, fills the box
+        .tl-logo--invert  → white logo, flipped to black so it reads on white
+        .tl-logo--mono    → monogram fallback when no logo file exists
+    */
+    .timeline { display: flex; flex-direction: column; }
+    .tl-item {
+      display: grid;
+      grid-template-columns: 126px 72px 1fr 22px;
+      column-gap: 18px;
+      align-items: start;
+    }
     /* Stretch the row's primary link across the whole row … */
     .tl-link::before { content: ''; position: absolute; inset: 0; border-radius: 14px; }
     /* … while secondary links stay clickable on their own */
     .tl-desc a { position: relative; z-index: 1; }
 
+    /* No frame — the box only reserves identical space for every logo */
     .tl-logo {
-      width: 56px; height: 56px;
-      padding: 8px;
-      background: #fff;
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      box-shadow: var(--shadow-s);
+      width: 72px; height: 72px;
       display: flex; align-items: center; justify-content: center;
-      overflow: hidden;
     }
     .tl-logo img {
       max-width: 100%; max-height: 100%;
@@ -229,13 +237,15 @@
       object-fit: contain;
       display: block;
     }
-    .tl-logo--fill { padding: 0; }
-    .tl-logo--fill img { width: 100%; height: 100%; object-fit: cover; }
-    /* For logos drawn in white, which would be invisible on the default tile */
-    .tl-logo--dark { background: #1d1d1f; border-color: #1d1d1f; }
+    /* Square marks that carry their own background fill the box, app-icon style */
+    .tl-logo--fill img { width: 100%; height: 100%; object-fit: cover; border-radius: 16px; }
+    /* Logos drawn in white would be invisible on the page, so flip them to black */
+    .tl-logo--invert img { filter: invert(1); }
     .tl-logo--mono {
-      background: var(--bg2);
-      font-size: .95rem; font-weight: 700; letter-spacing: .5px;
+      background: var(--bg2); border-radius: 16px;
+      width: 100%; height: 100%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; font-weight: 700; letter-spacing: .5px;
       color: var(--accent);
     }
 
@@ -248,14 +258,6 @@
     .tl-org { font-size: .875rem; color: var(--sub); margin-bottom: 8px; }
     .tl-desc { font-size: .875rem; color: var(--muted); line-height: 1.65; }
 
-    .tl-arrow {
-      align-self: center;
-      color: var(--accent); font-size: 1.1rem;
-      opacity: .5;
-      transition: opacity .15s, transform .15s;
-    }
-    .tl-item--link:hover .tl-arrow { opacity: 1; transform: translateX(3px); }
-
     /* ── Publications ── */
     /*
       Paper thumbnail naming convention:
@@ -265,28 +267,24 @@
       Add new papers at the bottom of the list and place the matching image
       in asset/publication/.
     */
-    .pub-list { display: flex; flex-direction: column; gap: 16px; }
+    .pub-list { display: flex; flex-direction: column; }
 
     .pub-card {
-      background: var(--bg2);
-      border-radius: var(--radius);
-      padding: 24px;
       display: flex;
       gap: 20px;
       align-items: center;
-      transition: box-shadow .2s;
       text-decoration: none !important;
       color: inherit;
     }
-    .pub-card:hover { box-shadow: var(--shadow-m); }
 
-    /* Thumbnail */
+    /* Thumbnail — a hairline replaces the card that used to frame it */
     .pub-thumb {
       flex-shrink: 0;
       width: 140px; height: 100px;
+      border: 1px solid var(--border);
       border-radius: 10px;
       object-fit: cover;
-      background: var(--bg3);
+      background: var(--bg2);
       display: block;
     }
 
@@ -300,13 +298,6 @@
     .pub-title { font-size: .975rem; font-weight: 600; color: var(--text); line-height: 1.45; margin-bottom: 8px; }
     .pub-authors { font-size: .83rem; color: var(--muted); line-height: 1.6; }
     .pub-authors strong { color: var(--sub); font-weight: 600; }
-
-    .pub-arrow {
-      color: var(--accent); font-size: 1.1rem;
-      flex-shrink: 0; opacity: .6;
-      transition: opacity .15s, transform .15s;
-    }
-    .pub-card:hover .pub-arrow { opacity: 1; transform: translateX(3px); }
 
     /* ── Footer ── */
     footer {
@@ -327,14 +318,13 @@
       .chips, .btn-row { justify-content: center; }
       .hero-bio { margin: 0 auto 28px; }
       /* Logo + date stay side by side, stacked above the body text */
-      .tl-item { grid-template-columns: 56px 1fr; column-gap: 14px; row-gap: 12px; }
+      .tl-item { grid-template-columns: 72px 1fr; column-gap: 14px; row-gap: 12px; }
       .tl-logo { grid-column: 1; grid-row: 1; }
       .tl-date { grid-column: 2; grid-row: 1; align-self: center; padding-top: 0; }
       .tl-body { grid-column: 1 / -1; grid-row: 2; }
-      .tl-arrow { display: none; }
-      .pub-card { flex-direction: column; align-items: flex-start; }
+      .pub-card { flex-direction: column; align-items: flex-start; gap: 16px; }
       .pub-thumb { width: 100%; height: 160px; }
-      .pub-arrow { display: none; }
+      .pub-arrow, .tl-arrow { display: none; }
     }
     @media (max-width: 480px) { .nav-links { display: none; } }
   </style>
@@ -442,12 +432,12 @@
   <!--
     To add a new entry:
       1. Copy a .tl-item block below and keep the same four children, in order:
-           .tl-date · .tl-logo (56×56 tile) · .tl-body · .tl-arrow
+           .tl-date · .tl-logo (72×72 box) · .tl-body · .tl-arrow
       2. Put the organisation logo in asset/experience/ (png or svg, any aspect
-         ratio — the tile scales it with object-fit: contain).
-      3. Add .tl-logo--fill for a full-bleed square mark, .tl-logo--dark for a
-         white/light logo, or use .tl-logo--mono with 1–2 letters when there is
-         no logo file.
+         ratio — the box scales it with object-fit: contain).
+      3. Add .tl-logo--fill for a square mark with its own background,
+         .tl-logo--invert for a white logo, or use .tl-logo--mono with 1–2
+         letters when there is no logo file.
       4. To make the whole row clickable: add .tl-item--link to the .tl-item,
          .tl-link to the anchor the row should open, and a .tl-arrow span at
          the end. Rows without a link simply omit all three.
@@ -496,7 +486,7 @@
 
       <div class="tl-item tl-item--link">
         <div class="tl-date">2023.04 – 2023.09</div>
-        <div class="tl-logo tl-logo--dark">
+        <div class="tl-logo tl-logo--invert">
           <img src="asset/experience/triplet_logo.svg" alt="triplllet logo" />
         </div>
         <div class="tl-body">
