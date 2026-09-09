@@ -25,6 +25,8 @@
       /* Washes for the clickable rows, derived from --accent */
       --accent-wash:  rgba(37,99,235,.035);
       --accent-press: rgba(37,99,235,.065);
+      /* Muted accent for decoration that should not compete with links */
+      --accent-soft:  rgba(37,99,235,.42);
       --text:     #1d1d1f;
       --sub:      #6e6e73;
       --muted:    #86868b;
@@ -81,13 +83,13 @@
     /* ── Section label ── */
     /*
       The gap below the accent rule is this margin plus the first row's own
-      26px of top padding, so 18px here reads as ~44px on the page.
+      26px of top padding, so 28px here reads as ~54px on the page.
     */
     .section-label {
       font-size: .95rem; font-weight: 700;
       text-transform: uppercase; letter-spacing: 1.3px;
       color: var(--text);
-      margin-bottom: 18px;
+      margin-bottom: 28px;
     }
     /* Short accent rule marking where each section starts */
     .section-label::after {
@@ -96,7 +98,7 @@
       width: 42px; height: 3px;
       margin-top: 10px;
       border-radius: 2px;
-      background: var(--accent);
+      background: var(--accent-soft);
     }
 
     /* ── Hero ── */
