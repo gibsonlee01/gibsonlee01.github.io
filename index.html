@@ -80,15 +80,14 @@
 
     /* ── Section label ── */
     /*
-      The label carries no bottom margin on purpose: its accent rule plus the
-      first row's own 26px of top padding already open the gap, and adding a
-      margin on top of those double-counts it.
+      The gap below the accent rule is this margin plus the first row's own
+      26px of top padding, so 18px here reads as ~44px on the page.
     */
     .section-label {
       font-size: .95rem; font-weight: 700;
       text-transform: uppercase; letter-spacing: 1.3px;
       color: var(--text);
-      margin-bottom: 0;
+      margin-bottom: 18px;
     }
     /* Short accent rule marking where each section starts */
     .section-label::after {
