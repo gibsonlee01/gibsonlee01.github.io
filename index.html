@@ -35,9 +35,11 @@
         One content shell for the nav, main and footer, so all three align.
         The gutter lives inside the width formula rather than in padding, which
         keeps the columns identical whatever each element's own padding is.
+        912px is the original 960px container minus its 24px of side padding,
+        so this reproduces the width the page started with.
       */
-      --max-width: 1180px;
-      --shell: min(calc(100% - 64px), var(--max-width));
+      --max-width: 912px;
+      --shell: min(calc(100% - 48px), var(--max-width));
     }
 
     html { scroll-behavior: smooth; }
@@ -74,19 +76,28 @@
 
     /* ── Layout ── */
     main { width: var(--shell); margin: 0 auto; padding-bottom: 72px; }
-    section { padding-top: 44px; }
+    section { padding-top: 64px; }
 
     /* ── Section label ── */
     /*
-      The margin below is nearly zero on purpose: the first row already brings
-      26px of its own top padding, so anything more double-counts and the label
-      drifts away from the list it belongs to.
+      The label carries no bottom margin on purpose: its accent rule plus the
+      first row's own 26px of top padding already open the gap, and adding a
+      margin on top of those double-counts it.
     */
     .section-label {
       font-size: .95rem; font-weight: 700;
       text-transform: uppercase; letter-spacing: 1.3px;
-      color: var(--muted);
-      margin-bottom: 4px;
+      color: var(--text);
+      margin-bottom: 0;
+    }
+    /* Short accent rule marking where each section starts */
+    .section-label::after {
+      content: '';
+      display: block;
+      width: 42px; height: 3px;
+      margin-top: 10px;
+      border-radius: 2px;
+      background: var(--accent);
     }
 
     /* ── Hero ── */
@@ -267,8 +278,6 @@
       padding-top: 3px; line-height: 1.5;
       white-space: nowrap;
     }
-    /* Cap the measure so the wider shell does not stretch lines past ~100 chars */
-    .tl-body { max-width: 720px; }
     .tl-title { font-size: 1rem; font-weight: 600; color: var(--text); margin-bottom: 4px; }
     .tl-org { font-size: .875rem; color: var(--sub); margin-bottom: 8px; }
     .tl-desc { font-size: .875rem; color: var(--muted); line-height: 1.65; }
@@ -307,7 +316,7 @@
       display: block;
     }
 
-    .pub-body { flex: 1; min-width: 0; max-width: 720px; }
+    .pub-body { flex: 1; min-width: 0; }
     .pub-venue {
       display: inline-block;
       font-size: .72rem; font-weight: 700;
@@ -332,7 +341,6 @@
 
     /* ── Responsive ── */
     @media (max-width: 680px) {
-      :root { --shell: min(calc(100% - 40px), var(--max-width)); }
       .hero { grid-template-columns: 1fr; text-align: center; gap: 32px; }
       .avatar-wrap, .avatar-wrap img, .avatar-fallback { width: 210px; height: 280px; margin: 0 auto; }
       .chips, .btn-row { justify-content: center; }
@@ -379,12 +387,12 @@
     <div class="hero-text">
       <div class="hero-eyebrow">
         <span class="status-dot"></span>
-        PhD Student · CIPLAB, Yonsei University
+        Integrated MS/PhD Student · CIPLAB, Yonsei University
       </div>
       <h1>Jiwoo Lee</h1>
       <p class="hero-role">3D Vision &amp; Robotics</p>
       <p class="hero-bio">
-        Thank you for visiting my page. I am a PhD student at
+        Thank you for visiting my page. I am an integrated MS/PhD student at
         <a href="https://www.ciplab.kr" target="_blank">CIPLAB</a>,
         Yonsei University, advised by Prof.
         <a href="https://www.ciplab.kr/members/professor" target="_blank">Seon Joo Kim</a>.
@@ -471,7 +479,7 @@
           <img src="asset/experience/ciplab_logo.png" alt="CIPLAB logo" />
         </div>
         <div class="tl-body">
-          <div class="tl-title">PhD Student</div>
+          <div class="tl-title">Integrated MS/PhD Student</div>
           <div class="tl-org"><a class="tl-link" href="https://www.ciplab.kr" target="_blank" rel="noopener">CIPLAB</a> · Yonsei University</div>
           <div class="tl-desc">3D vision and spatial understanding, advised by Prof. <a href="https://www.ciplab.kr/members/professor" target="_blank" rel="noopener">Seon Joo Kim</a>.</div>
         </div>
