@@ -74,15 +74,19 @@
 
     /* ── Layout ── */
     main { width: var(--shell); margin: 0 auto; padding-bottom: 72px; }
-    section { padding-top: 56px; }
+    section { padding-top: 44px; }
 
     /* ── Section label ── */
-    /* Sits closer to its own list than to the section above it */
+    /*
+      The margin below is nearly zero on purpose: the first row already brings
+      26px of its own top padding, so anything more double-counts and the label
+      drifts away from the list it belongs to.
+    */
     .section-label {
-      font-size: .8rem; font-weight: 700;
-      text-transform: uppercase; letter-spacing: 1.5px;
+      font-size: .95rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 1.3px;
       color: var(--muted);
-      margin-bottom: 20px;
+      margin-bottom: 4px;
     }
 
     /* ── Hero ── */
