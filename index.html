@@ -25,8 +25,6 @@
       /* Washes for the clickable rows, derived from --accent */
       --accent-wash:  rgba(37,99,235,.035);
       --accent-press: rgba(37,99,235,.065);
-      /* Muted accent for decoration that should not compete with links */
-      --accent-soft:  rgba(37,99,235,.42);
       --text:     #1d1d1f;
       --sub:      #6e6e73;
       --muted:    #86868b;
@@ -78,7 +76,12 @@
 
     /* ── Layout ── */
     main { width: var(--shell); margin: 0 auto; padding-bottom: 72px; }
-    section { padding-top: 64px; }
+    /*
+      Each divider should sit midway between the two sections it splits. The
+      22px below a section adds to the last row's own 26px of bottom padding,
+      so every divider ends up with ~48px above it and 56px below.
+    */
+    section { padding-top: 56px; padding-bottom: 22px; }
 
     /* ── Section label ── */
     /*
@@ -98,7 +101,7 @@
       width: 42px; height: 3px;
       margin-top: 10px;
       border-radius: 2px;
-      background: var(--accent-soft);
+      background: var(--accent);
     }
 
     /* ── Hero ── */
@@ -108,7 +111,8 @@
       gap: 56px;
       align-items: center;
       padding-top: 72px;
-      padding-bottom: 32px;
+      /* Matches the ~48px every other section leaves above its divider */
+      padding-bottom: 48px;
     }
 
     /* Avatar — a 3:4 portrait frame rather than a circle */
