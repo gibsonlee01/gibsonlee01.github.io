@@ -31,6 +31,13 @@
       --shadow-s: 0 2px 8px rgba(0,0,0,.06);
       --shadow-m: 0 4px 20px rgba(0,0,0,.08);
       --shadow-l: 0 12px 48px rgba(0,0,0,.1);
+      /*
+        One content shell for the nav, main and footer, so all three align.
+        The gutter lives inside the width formula rather than in padding, which
+        keeps the columns identical whatever each element's own padding is.
+      */
+      --max-width: 1180px;
+      --shell: min(calc(100% - 64px), var(--max-width));
     }
 
     html { scroll-behavior: smooth; }
@@ -57,8 +64,7 @@
       border-bottom: 1px solid var(--border);
     }
     .nav-inner {
-      width: 100%; max-width: 960px;
-      padding: 0 24px;
+      width: var(--shell);
       display: flex; align-items: center; justify-content: space-between;
     }
     .nav-logo { font-size: .9rem; font-weight: 600; color: var(--text); letter-spacing: -.3px; }
@@ -67,7 +73,7 @@
     .nav-links a:hover { color: var(--text); text-decoration: none; }
 
     /* ── Layout ── */
-    main { max-width: 960px; margin: 0 auto; padding: 0 24px 100px; }
+    main { width: var(--shell); margin: 0 auto; padding-bottom: 100px; }
     section { padding-top: 80px; }
 
     /* ── Section label ── */
@@ -82,32 +88,31 @@
     .hero {
       display: grid;
       grid-template-columns: auto 1fr;
-      gap: 52px;
+      gap: 56px;
       align-items: center;
       padding-top: 80px;
       padding-bottom: 20px;
     }
 
-    /* Avatar */
-    .avatar-wrap { flex-shrink: 0; width: 200px; height: 200px; }
-    .avatar-wrap img {
-      width: 200px; height: 200px;
-      border-radius: 50%;
-      object-fit: cover;
-      /* shift down slightly so the face sits in the center of the circle */
-      object-position: center 15%;
-      display: block;
+    /* Avatar — a 3:4 portrait frame rather than a circle */
+    .avatar-wrap { flex-shrink: 0; width: 270px; height: 360px; }
+    .avatar-wrap img, .avatar-fallback {
+      width: 270px; height: 360px;
+      border-radius: 20px;
       box-shadow: var(--shadow-l);
     }
+    .avatar-wrap img {
+      object-fit: cover;
+      /* the source is 445×685, so this only trims a little off the bottom */
+      object-position: center 20%;
+      display: block;
+    }
     .avatar-fallback {
-      width: 200px; height: 200px;
-      border-radius: 50%;
       background: var(--bg2);
       display: none;
       align-items: center; justify-content: center;
       font-size: 3.5rem; font-weight: 700;
       color: var(--accent);
-      box-shadow: var(--shadow-l);
     }
 
     /* Hero text */
@@ -133,7 +138,7 @@
       color: var(--text); margin-bottom: 10px;
     }
     .hero-role { font-size: 1.05rem; color: var(--sub); font-weight: 400; margin-bottom: 18px; }
-    .hero-bio { font-size: .95rem; color: var(--sub); line-height: 1.75; max-width: 480px; margin-bottom: 28px; }
+    .hero-bio { font-size: .95rem; color: var(--sub); line-height: 1.75; max-width: 560px; margin-bottom: 28px; }
 
     /* Chips */
     .chips { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 28px; }
@@ -198,7 +203,7 @@
     .pub-card:hover::after, .tl-item--link:hover::after { background-size: 100% 100%; height: 2px; }
 
     .pub-arrow, .tl-arrow {
-      flex-shrink: 0; align-self: center;
+      flex-shrink: 0; align-self: center; margin-left: auto;
       color: var(--accent); font-size: 1.1rem;
       opacity: .5;
       transition: opacity .15s, transform .15s;
@@ -257,6 +262,8 @@
       padding-top: 3px; line-height: 1.5;
       white-space: nowrap;
     }
+    /* Cap the measure so the wider shell does not stretch lines past ~100 chars */
+    .tl-body { max-width: 720px; }
     .tl-title { font-size: 1rem; font-weight: 600; color: var(--text); margin-bottom: 4px; }
     .tl-org { font-size: .875rem; color: var(--sub); margin-bottom: 8px; }
     .tl-desc { font-size: .875rem; color: var(--muted); line-height: 1.65; }
@@ -291,7 +298,7 @@
       display: block;
     }
 
-    .pub-body { flex: 1; min-width: 0; }
+    .pub-body { flex: 1; min-width: 0; max-width: 720px; }
     .pub-venue {
       display: inline-block;
       font-size: .72rem; font-weight: 700;
@@ -305,9 +312,9 @@
     /* ── Footer ── */
     footer {
       border-top: 1px solid var(--border);
-      padding: 32px 24px; text-align: center;
+      padding: 32px 0; text-align: center;
       font-size: .8rem; color: var(--muted);
-      max-width: 960px; margin: 0 auto;
+      width: var(--shell); margin: 0 auto;
     }
 
     /* ── Scroll reveal ── */
@@ -316,8 +323,9 @@
 
     /* ── Responsive ── */
     @media (max-width: 680px) {
+      :root { --shell: min(calc(100% - 40px), var(--max-width)); }
       .hero { grid-template-columns: 1fr; text-align: center; gap: 32px; }
-      .avatar-wrap, .avatar-wrap img, .avatar-fallback { width: 150px; height: 150px; margin: 0 auto; }
+      .avatar-wrap, .avatar-wrap img, .avatar-fallback { width: 210px; height: 280px; margin: 0 auto; }
       .chips, .btn-row { justify-content: center; }
       .hero-bio { margin: 0 auto 28px; }
       /* Logo + date stay side by side, stacked above the body text */
