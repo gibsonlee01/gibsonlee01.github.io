@@ -115,25 +115,102 @@
       padding-bottom: 48px;
     }
 
-    /* Avatar — a 3:4 portrait frame rather than a circle */
-    .avatar-wrap { flex-shrink: 0; width: 270px; height: 360px; }
-    .avatar-wrap img, .avatar-fallback {
+    /* Avatar — a glass block with the portrait on its front face, rotated by dragging */
+    .avatar-wrap {
+      --w: 250px; --h: 340px; --d: var(--w);
+      flex-shrink: 0;
       width: 270px; height: 360px;
-      border-radius: 20px;
-      box-shadow: var(--shadow-l);
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
+      perspective: 1400px;
+      cursor: grab;
+      touch-action: none;   /* let drags on the photo rotate it instead of scrolling */
+      user-select: none;
     }
-    .avatar-wrap img {
+    .avatar-wrap.dragging { cursor: grabbing; }
+    /* soft floor shadow: a wide ambient pool plus a tighter contact shadow */
+    .avatar-wrap::after {
+      content: "";
+      position: absolute;
+      bottom: -20px; left: 50%;
+      width: calc(var(--w) * 1.15); height: 34px;
+      transform: translateX(-50%);
+      background:
+        radial-gradient(50% 50% at 50% 50%, rgba(20,35,80,.16), transparent 70%),
+        radial-gradient(35% 30% at 50% 45%, rgba(20,35,80,.12), transparent 100%);
+      filter: blur(2px);
+      pointer-events: none;
+    }
+    .cube {
+      width: var(--w); height: var(--h);
+      position: relative;
+      transform-style: preserve-3d;
+      /* pushed back by half its depth so the front face sits at its true size;
+         angles are set by the script at the bottom */
+      transform: translateZ(calc(var(--d) / -2)) rotateX(var(--rx, -4deg)) rotateY(var(--ry, 16deg));
+      will-change: transform;
+    }
+    .cube-face {
+      position: absolute;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    /* moving gloss — its position follows the rotation (--t, set in JS) */
+    .cube-face::after {
+      content: "";
+      position: absolute; inset: 0;
+      background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,.32) 50%, transparent 60%);
+      background-size: 300% 100%;
+      background-position: calc(var(--t, .3) * 100%) 0;
+      pointer-events: none;
+    }
+    .cube-face img {
+      width: 100%; height: 100%;
       object-fit: cover;
-      /* the source is 445×685, so this only trims a little off the bottom */
       object-position: center 20%;
       display: block;
     }
-    .avatar-fallback {
+    .cube-face--front, .cube-face--back { width: var(--w); height: var(--h); }
+    .cube-face--left, .cube-face--right {
+      width: var(--d); height: var(--h);
+      left: calc((var(--w) - var(--d)) / 2);
+    }
+    .cube-face--top, .cube-face--bottom {
+      width: var(--w); height: var(--d);
+      top: calc((var(--h) - var(--d)) / 2);
+    }
+    .cube-face--front  { transform: translateZ(calc(var(--d) / 2)); }
+    .cube-face--back   { transform: rotateY(180deg) translateZ(calc(var(--d) / 2)); }
+    .cube-face--right  { transform: rotateY(90deg)  translateZ(calc(var(--w) / 2)); }
+    .cube-face--left   { transform: rotateY(-90deg) translateZ(calc(var(--w) / 2)); }
+    .cube-face--top    { transform: rotateX(90deg)  translateZ(calc(var(--h) / 2)); }
+    .cube-face--bottom { transform: rotateX(-90deg) translateZ(calc(var(--h) / 2)); }
+
+    /* Glass: clear, cool-tinted panes, each shaded as if lit from the upper left */
+    .cube-face--front {
       background: var(--bg2);
-      display: none;
-      align-items: center; justify-content: center;
-      font-size: 3.5rem; font-weight: 700;
-      color: var(--accent);
+    }
+    /* a faint top-left gloss over the photo, as if it sits behind glass */
+    .cube-face--front::before {
+      content: "";
+      position: absolute; inset: 0; z-index: 1;
+      background: linear-gradient(140deg, rgba(255,255,255,.22) 0%, rgba(255,255,255,0) 35%);
+      pointer-events: none;
+    }
+    .cube-face--left {
+      background: linear-gradient(180deg, rgba(236,242,255,.62) 0%, rgba(214,226,250,.42) 100%);
+    }
+    .cube-face--right {
+      background: linear-gradient(180deg, rgba(222,232,252,.50) 0%, rgba(196,212,244,.38) 100%);
+    }
+    .cube-face--back {
+      background: linear-gradient(180deg, rgba(244,247,255,.30) 0%, rgba(226,234,252,.22) 100%);
+    }
+    .cube-face--top {
+      background: linear-gradient(135deg, rgba(255,255,255,.85) 0%, rgba(236,242,255,.55) 100%);
+    }
+    .cube-face--bottom {
+      background: linear-gradient(135deg, rgba(206,218,244,.45) 0%, rgba(184,200,236,.35) 100%);
     }
 
     /* Hero text */
@@ -347,7 +424,7 @@
     /* ── Responsive ── */
     @media (max-width: 680px) {
       .hero { grid-template-columns: 1fr; text-align: center; gap: 32px; }
-      .avatar-wrap, .avatar-wrap img, .avatar-fallback { width: 210px; height: 280px; margin: 0 auto; }
+      .avatar-wrap { --w: 190px; --h: 258px; --d: var(--w); width: 230px; height: 280px; margin: 0 auto; }
       .chips, .btn-row { justify-content: center; }
       .hero-bio { margin: 0 auto 28px; }
       /* Logo + date stay side by side, stacked above the body text */
@@ -381,12 +458,14 @@
   <!-- ── Hero ── -->
   <section id="about" class="hero">
     <div class="avatar-wrap">
-      <img
-        src="asset/profile_2.png"
-        alt="Jiwoo Lee"
-        onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
-      />
-      <div class="avatar-fallback">JL</div>
+      <div class="cube">
+        <div class="cube-face cube-face--front"><img src="asset/profile_2.png" alt="Jiwoo Lee" draggable="false" /></div>
+        <div class="cube-face cube-face--right"></div>
+        <div class="cube-face cube-face--back"></div>
+        <div class="cube-face cube-face--left"></div>
+        <div class="cube-face cube-face--top"></div>
+        <div class="cube-face cube-face--bottom"></div>
+      </div>
     </div>
 
     <div class="hero-text">
@@ -615,6 +694,93 @@
     });
   }, { threshold: 0.08 });
   document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // Profile block: drag to orbit it like a 3D asset. On load it spins once to hint
+  // that it moves, and 10s after being left at an angle it eases back to rest.
+  (() => {
+    const wrap = document.querySelector('.avatar-wrap');
+    const cube = wrap && wrap.querySelector('.cube');
+    if (!cube) return;
+
+    const REST_Y = 16, REST_X = -4;          // resting angle (degrees)
+    const SENS = 0.45;                       // degrees per pixel dragged
+    const IDLE_MS = 10000;
+    const motion = !matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    let ry = REST_Y, rx = REST_X, vy = 0, vx = 0, lastX = 0, lastY = 0;
+    let raf = null, idleTimer = null;
+    const clampX = v => Math.max(-70, Math.min(70, v));
+    const ease = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+
+    const apply = () => {
+      cube.style.setProperty('--ry', ry + 'deg');
+      cube.style.setProperty('--rx', rx + 'deg');
+      // slide the gloss across the faces as it turns
+      cube.style.setProperty('--t', (((-ry % 360) + 360) % 360) / 360);
+    };
+    const stop = () => { cancelAnimationFrame(raf); raf = null; };
+
+    // animate from the current angle to (toY, toX)
+    const tween = (toY, toX, ms, done) => {
+      stop();
+      const y0 = ry, x0 = rx, t0 = performance.now();
+      const step = now => {
+        const k = ease(Math.min(1, (now - t0) / ms));
+        ry = y0 + (toY - y0) * k; rx = x0 + (toX - x0) * k;
+        apply();
+        if (k < 1) raf = requestAnimationFrame(step);
+        else { raf = null; done && done(); }
+      };
+      raf = requestAnimationFrame(step);
+    };
+
+    const goHome = () => {
+      // take the short way round
+      ry = REST_Y + (((ry - REST_Y) % 360 + 540) % 360 - 180);
+      if (Math.abs(ry - REST_Y) < .5 && Math.abs(rx - REST_X) < .5) return;
+      tween(REST_Y, REST_X, 1400);
+    };
+    const armIdle = () => {
+      clearTimeout(idleTimer);
+      if (motion) idleTimer = setTimeout(goHome, IDLE_MS);
+    };
+
+    const glide = () => {
+      vy *= 0.94; vx *= 0.94;
+      ry += vy; rx = clampX(rx + vx);
+      apply();
+      raf = Math.abs(vy) + Math.abs(vx) > 0.02 ? requestAnimationFrame(glide) : null;
+    };
+
+    wrap.addEventListener('pointerdown', e => {
+      stop(); clearTimeout(idleTimer);
+      vy = vx = 0; lastX = e.clientX; lastY = e.clientY;
+      wrap.setPointerCapture(e.pointerId);
+      wrap.classList.add('dragging');
+    });
+    wrap.addEventListener('pointermove', e => {
+      if (!wrap.hasPointerCapture(e.pointerId)) return;
+      vy = (e.clientX - lastX) * SENS;
+      vx = -(e.clientY - lastY) * SENS;
+      lastX = e.clientX; lastY = e.clientY;
+      ry += vy; rx = clampX(rx + vx);
+      apply();
+    });
+    const release = () => {
+      wrap.classList.remove('dragging');
+      if (motion && !raf) raf = requestAnimationFrame(glide);
+      armIdle();
+    };
+    wrap.addEventListener('pointerup', release);
+    wrap.addEventListener('pointercancel', release);
+
+    apply();
+    // intro: one full turn shortly after the page appears
+    if (motion) setTimeout(() => {
+      if (!raf && !wrap.classList.contains('dragging'))
+        tween(REST_Y - 360, REST_X, 1800, () => { ry = REST_Y; apply(); });
+    }, 700);
+  })();
 </script>
 </body>
 </html>
